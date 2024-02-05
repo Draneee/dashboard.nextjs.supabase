@@ -1,3 +1,16 @@
+## Set up a Supabase project
+
+Head over to [database.new](https://database.new/) and create a new Supabase project.
+When your project is up and running...
+
+### Declare Supabase Environment Variables
+Rename .env.local.example to .env.local and populate with your Supabase connection variables.
+ou can get them from the [dashboard](https://supabase.com/dashboard/project/_/settings/api).
+
+
+
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
