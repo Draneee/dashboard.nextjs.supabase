@@ -1,3 +1,4 @@
+import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
 export const objEmpty = {
@@ -42,3 +43,37 @@ export const formSchemaNewSale = z.object({
 });
 
 export const handleModal = (fnSetter: (p: boolean) => void, currentState: boolean) => fnSetter(!currentState)
+
+export const calcTotal = (form: UseFormReturn<{
+    client: string;
+    branchOffice: string;
+    details: {
+        id: string;
+        nameProduct: string;
+        quantity: number;
+        price: number;
+        subtotal: number;
+    }[];
+    currency?: any;
+}, any, {
+    client: string;
+    branchOffice: string;
+    details: {
+        id: string;
+        nameProduct: string;
+        quantity: number;
+        price: number;
+        subtotal: number;
+    }[];
+    currency?: any;
+}>) => form
+    .watch('details')
+    .reduce((prev, itm) => prev + itm.subtotal, 0);
+
+
+export const formatedDataClient = (data: any[] | null) => data?.map(itm => {
+    return {
+        value: itm.id,
+        label: itm.name
+    }
+})

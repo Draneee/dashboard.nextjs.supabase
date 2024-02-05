@@ -1,15 +1,17 @@
 import { FormDocumentProduct } from '@/components/dashboard/detail-input';
-import InputNewSale from '@/components/dashboard/input-new-sale';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { cookies } from 'next/headers';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 
-import { cookies } from 'next/headers';
 import Image from 'next/image';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { Database } from '@/lib/database.types';
+
 export default async function DashboardPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({
+    cookies: () => cookieStore,
+  });
+
   const {
     data: { session },
   } = await supabase.auth.getSession();
@@ -17,6 +19,8 @@ export default async function DashboardPage() {
   if (!session) {
     redirect('/admin');
   }
+  let { data: Client, error } = await supabase.from('Client').select();
+  console.log(Client);
   return (
     <main className='w-full py-12 px-20 bg-[#F7F7FA]'>
       <header className='flex items-center w-full gap-4 mb-8'>

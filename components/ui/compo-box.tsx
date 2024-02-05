@@ -1,10 +1,6 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import { ControllerRenderProps, UseFormReturn, useForm } from 'react-hook-form';
-import { z } from 'zod';
-
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,40 +10,28 @@ import {
   CommandInput,
   CommandItem,
 } from '@/components/ui/command';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl } from '@/components/ui/form';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-const languages = [
-  { label: 'English', value: 'en' },
-  { label: 'French', value: 'fr' },
-  { label: 'German', value: 'de' },
-  { label: 'Spanish', value: 'es' },
-  { label: 'Portuguese', value: 'pt' },
-  { label: 'Russian', value: 'ru' },
-  { label: 'Japanese', value: 'ja' },
-  { label: 'Korean', value: 'ko' },
-  { label: 'Chinese', value: 'zh' },
-] as const;
-
-const FormSchema = z.object({
-  language: z.string({
-    required_error: 'Please select a language.',
-  }),
-});
-
-export function ComboboxForm({ field, form }: { field: any; form: any }) {
+export function ComboboxForm({
+  field,
+  form,
+  name,
+  label,
+  selectOptions,
+  handlerSearch,
+}: {
+  field: any;
+  form: any;
+  name: string;
+  label: string;
+  selectOptions?: { value: string; label: string }[];
+  handlerSearch?: (e: React.FormEvent<HTMLDivElement>) => void;
+}) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -61,33 +45,32 @@ export function ComboboxForm({ field, form }: { field: any; form: any }) {
             )}
           >
             {field.value
-              ? languages.find((language) => language.value === field.value)
-                  ?.label
-              : 'Select language'}
+              ? selectOptions?.find((itm) => itm.value === field.value)?.label
+              : `Select ${label}`}
             <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
           </Button>
         </FormControl>
       </PopoverTrigger>
       <PopoverContent className='w-[--radix-popover-trigger-width] p-0'>
-        <Command>
-          <CommandInput placeholder='Search language...' />
-          <CommandEmpty>No language found.</CommandEmpty>
+        <Command onChange={handlerSearch}>
+          <CommandInput placeholder={`Search ${label}`} />
+          <CommandEmpty>No {label} found.</CommandEmpty>
           <CommandGroup>
-            {languages.map((language) => (
+            {selectOptions?.map((itm) => (
               <CommandItem
-                value={language.label}
-                key={language.value}
+                value={itm.label}
+                key={itm.value}
                 onSelect={() => {
-                  form.setValue('language', language.value);
+                  form.setValue(name, itm.value);
                 }}
               >
                 <Check
                   className={cn(
                     'mr-2 h-4 w-4',
-                    language.value === field.value ? 'opacity-100' : 'opacity-0'
+                    itm.value === field.value ? 'opacity-100' : 'opacity-0'
                   )}
                 />
-                {language.label}
+                {itm.label}
               </CommandItem>
             ))}
           </CommandGroup>

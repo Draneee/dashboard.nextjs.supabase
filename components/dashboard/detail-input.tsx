@@ -2,7 +2,7 @@
 
 import InputNewSale from '@/components/dashboard/input-new-sale';
 import { Input } from '@/components/ui/input';
-import { formSchemaNewSale, objEmpty } from '@/lib/admin.dashboard';
+import { calcTotal, formSchemaNewSale, objEmpty } from '@/lib/admin.dashboard';
 import Image from 'next/image';
 import React from 'react';
 import { Label } from '../ui/label';
@@ -26,6 +26,8 @@ import {
 } from '../ui/select';
 import { ComboboxForm } from '../ui/compo-box';
 import { AddNewClient } from './add-new-client';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import ClientSelectSearch from './client-select-search';
 
 export function FormDocumentProduct() {
   const form = useForm<z.infer<typeof formSchemaNewSale>>({
@@ -47,10 +49,19 @@ export function FormDocumentProduct() {
   const handleStateAddArray = () =>
     append({ id: '2', nameProduct: '', quantity: 0, price: 0, subtotal: 0 });
 
-  const total = form
-    .watch('details')
-    .reduce((prev, itm) => prev + itm.subtotal, 0);
+  const total = calcTotal(form);
 
+  const supabase = createClientComponentClient();
+  React.useEffect(() => {
+    const fetchClient = async () => {
+      let { data: Client, error } = await supabase.from('Client').select();
+
+      console.log(Client);
+    };
+
+    fetchClient();
+  }, []);
+  console.log(form.watch('client'));
   return (
     <div>
       <Form {...form}>
@@ -62,18 +73,7 @@ export function FormDocumentProduct() {
                 control={form.control}
                 name='client'
                 render={({ field }) => (
-                  <div className='w-full flex flex-col col-span-6 '>
-                    <div className='flex items-end gap-2 '>
-                      <FormItem className='flex-1 grid'>
-                        <FormLabel className='my-[5px]'>Client</FormLabel>
-                        <FormControl>
-                          <ComboboxForm field={field} form={form} />
-                        </FormControl>
-                      </FormItem>
-                      <AddNewClient />
-                    </div>
-                    <FormMessage />
-                  </div>
+                  <ClientSelectSearch field={field} form={form} />
                 )}
               />
               <FormField
@@ -138,7 +138,11 @@ export function FormDocumentProduct() {
                         <FormLabel>Name</FormLabel>
                         <div className='flex flex-col'>
                           <FormControl>
-                            <ComboboxForm field={field} form={form} />
+                            <ComboboxForm
+                              field={field}
+                              form={form}
+                              name={`details.${idx}.nameProduct`}
+                            />
                           </FormControl>
                         </div>
                         <FormMessage />
