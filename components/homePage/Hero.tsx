@@ -5,7 +5,7 @@ const Hero = () => {
     <div className='relative w-full h-[100dvh]'>
       <div className='absolute h-full w-full flex justify-end -z-10'>
         <Image
-          src='/Image/image.hero.svg'
+          src='/custom-svg/image.hero.svg'
           alt='hola'
           width={0}
           height={0}

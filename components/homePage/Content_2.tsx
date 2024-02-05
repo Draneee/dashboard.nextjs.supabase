@@ -8,7 +8,7 @@ const Content_2 = () => {
         <div className='flex justify-end w-full'>
           <div className='flex justify-center w-full'>
             <Image
-              src='/Image/clouds.svg'
+              src='/custom-svg/clouds.svg'
               alt='clouds'
               width={0}
               height={0}

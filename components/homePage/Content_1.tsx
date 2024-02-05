@@ -18,7 +18,7 @@ const Content_1 = () => {
             <div className='hover:scale-105 transition' key={idx}>
               <div className='bg-blueTest aspect-square grid place-items-center mb-4'>
                 <Image
-                  src='/Image/placeholder.svg'
+                  src='/custom-svg/placeholder.svg'
                   alt='Placeholder'
                   width={0}
                   height={0}
