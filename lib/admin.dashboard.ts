@@ -1,5 +1,6 @@
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
+import { Datum } from "./interface";
 
 export const objEmpty = {
     name: '',
@@ -91,8 +92,8 @@ export const formatBranchOffice = (brOf: any[] | null) => brOf?.map(itm => {
 export const arrFindById = (id: string, data: any[] | null) => data?.find((itm) => itm.id === id);
 
 export const formatedPriceByCurrency = (
-    currency: string,
-    value: string | number
+    currency?: string,
+    value?: string | number
 ) => {
     let formatFn = new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -104,3 +105,8 @@ export const formatedPriceByCurrency = (
 
 export const calculateSubTotal = (quantity: string, price: string) =>
     Number(quantity) * Number(price);
+
+export const handleItemState = (fnSet: (str: Datum | undefined) => void, curr: any, value?: Datum) => fnSet(curr ? undefined : value)
+
+export const fnSalesTotal = (sales?: Datum) =>
+    sales?.products.reduce((prev, curr) => prev + curr.subtotal, 0);

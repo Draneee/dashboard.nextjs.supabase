@@ -9,6 +9,7 @@ export interface SalesData {
 }
 
 export interface Datum {
+    id: string;
     total: number;
     products: Product[];
     clientId: ClientID;
@@ -25,6 +26,7 @@ export interface ClientID {
 }
 
 export interface Product {
+    price: string;
     id: string;
     quantity: number;
     subtotal: number;

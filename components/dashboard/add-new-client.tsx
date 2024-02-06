@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -23,6 +22,8 @@ import {
 import { Input } from '../ui/input';
 import React from 'react';
 import { handleModal } from '@/lib/admin.dashboard';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   clientName: z.string(),
@@ -30,6 +31,7 @@ const formSchema = z.object({
 
 export function AddNewClient() {
   const [openModalNewClient, setOpenModalNewClient] = React.useState(false);
+  const supabase = createClientComponentClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,8 +40,20 @@ export function AddNewClient() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { error } = await supabase
+      .from('Client')
+      .upsert({
+        name: values.clientName,
+      })
+      .select();
+    if (error) {
+      toast.error('User could not be created.');
+      console.log(error);
+      return;
+    }
+    toast.success('Customer successfully created');
+    handleModal(setOpenModalNewClient, openModalNewClient);
   }
 
   return (
@@ -75,7 +89,7 @@ export function AddNewClient() {
                       <FormLabel>Client Name</FormLabel>
                       <FormControl>
                         <Input
-                          type='number'
+                          type='text'
                           placeholder='Jhon Doe'
                           className='bg-accent'
                           {...field}
