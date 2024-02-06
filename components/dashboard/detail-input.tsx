@@ -1,9 +1,6 @@
 'use client';
-
-import InputNewSale from '@/components/dashboard/input-new-sale';
 import { Input } from '@/components/ui/input';
 import { calcTotal, formSchemaNewSale, objEmpty } from '@/lib/admin.dashboard';
-import Image from 'next/image';
 import React from 'react';
 import { Label } from '../ui/label';
 import { z } from 'zod';
@@ -24,10 +21,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { ComboboxForm } from '../ui/compo-box';
-import { AddNewClient } from './add-new-client';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import ClientSelectSearch from './client-select-search';
+import DetailProductRow from './detail-product-row';
 
 export function FormDocumentProduct() {
   const form = useForm<z.infer<typeof formSchemaNewSale>>({
@@ -47,21 +43,36 @@ export function FormDocumentProduct() {
   });
 
   const handleStateAddArray = () =>
-    append({ id: '2', nameProduct: '', quantity: 0, price: 0, subtotal: 0 });
+    append({
+      id: crypto.randomUUID(),
+      nameProduct: '',
+      quantity: 0,
+      price: 0,
+      subtotal: 0,
+    });
 
   const total = calcTotal(form);
 
   const supabase = createClientComponentClient();
+  const [branchOffice, setBranchOffice] = React.useState<any[] | null>(null);
   React.useEffect(() => {
     const fetchClient = async () => {
-      let { data: Client, error } = await supabase.from('Client').select();
-
-      console.log(Client);
+      let { data: BranchOffice, error } = await supabase
+        .from('BranchOffice')
+        .select();
+      setBranchOffice(BranchOffice);
+      console.log(BranchOffice);
     };
 
     fetchClient();
   }, []);
-  console.log(form.watch('client'));
+
+  const currencySelect = (id: string) =>
+    branchOffice?.find((itm) => itm.id === id);
+
+  const actualCurrency = currencySelect(form.watch('branchOffice'))?.currency;
+  const handleItmProduct = () => {};
+
   return (
     <div>
       <Form {...form}>
@@ -92,145 +103,31 @@ export function FormDocumentProduct() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value='m@example.com'>
-                          m@example.com
-                        </SelectItem>
-                        <SelectItem value='m@google.com'>
-                          m@google.com
-                        </SelectItem>
-                        <SelectItem value='m@support.com'>
-                          m@support.com
-                        </SelectItem>
+                        {branchOffice?.map((itm) => (
+                          <SelectItem value={itm.id}>{itm.name}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='currency'
-                render={({ field }) => (
-                  <FormItem className='col-span-2'>
-                    <FormLabel>Currency</FormLabel>
-                    <FormControl>
-                      <Input placeholder='USD' readOnly {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className='col-span-2 space-y-1.5'>
+                <Label>Currency</Label>
+                <Input placeholder='USD' readOnly value={actualCurrency} />
+              </div>
             </section>
           </article>
           <article>
             <h3 className='text-2xl font-semibold mb-3'>Details</h3>
             {fields.map((itm, idx) => (
-              <div className='flex gap-2' key={itm.id}>
-                <section
-                  key={itm.id}
-                  className='grid grid-cols-12 gap-4 mb-5 flex-1'
-                >
-                  <FormField
-                    control={form.control}
-                    name={`details.${idx}.nameProduct`}
-                    render={({ field }) => (
-                      <FormItem className='col-span-6'>
-                        <FormLabel>Name</FormLabel>
-                        <div className='flex flex-col'>
-                          <FormControl>
-                            <ComboboxForm
-                              field={field}
-                              form={form}
-                              name={`details.${idx}.nameProduct`}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`details.${idx}.quantity`}
-                    render={({ field }) => (
-                      <FormItem className='col-span-2'>
-                        <FormLabel>Quantity</FormLabel>
-                        <FormControl>
-                          <Input
-                            type='number'
-                            placeholder='Quantity...'
-                            {...field}
-                            readOnly
-                            onChange={(e) => {
-                              field.onChange(parseInt(e.target.value));
-                              const price = form.getValues(
-                                `details.${idx}.price`
-                              );
-                              const quantity = parseInt(e.target.value);
-                              const subtotal = price * quantity || 0;
-                              form.setValue(
-                                `details.${idx}.subtotal`,
-                                subtotal
-                              );
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`details.${idx}.price`}
-                    render={({ field }) => (
-                      <FormItem className='col-span-2'>
-                        <FormLabel>Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            type='number'
-                            placeholder='Price...'
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(parseInt(e.target.value))
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`details.${idx}.subtotal`}
-                    render={({ field }) => (
-                      <FormItem className='col-span-2'>
-                        <FormLabel>Subtotal</FormLabel>
-                        <FormControl>
-                          <Input
-                            type='number'
-                            placeholder='subtotal...'
-                            // readOnly
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </section>
-                <button
-                  onClick={() => remove(idx)}
-                  className='bg-blueTest h-10 w-10 grid place-items-center mt-[30px]'
-                >
-                  <Image
-                    src={'/custom-svg/x.svg'}
-                    alt='x'
-                    width={0}
-                    height={0}
-                    className='h-3 w-3'
-                  />
-                </button>
-              </div>
+              <DetailProductRow
+                idx={idx}
+                form={form}
+                key={itm.id}
+                remove={remove}
+                actualCurrency={actualCurrency}
+              />
             ))}
 
             <button

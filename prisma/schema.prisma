@@ -20,16 +20,14 @@ model Client {
 }
 
 model Details {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   quantity  Int
   subtotal  BigInt
-  productId String  @db.Uuid
-  Product   Product @relation(fields: [productId], references: [id])
+  productId String @db.Uuid
 }
 
 model Product {
-  id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name    String
-  price   BigInt
-  Details Details[]
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name  String
+  price String
 }

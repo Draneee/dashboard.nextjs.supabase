@@ -30,7 +30,7 @@ export const handleDeleteState = (
 const stateObjectSchema = z.object({
     id: z.string(),
     nameProduct: z.string(),
-    quantity: z.number(),
+    quantity: z.any(),
     price: z.number(),
     subtotal: z.number(),
 });
@@ -45,26 +45,26 @@ export const formSchemaNewSale = z.object({
 export const handleModal = (fnSetter: (p: boolean) => void, currentState: boolean) => fnSetter(!currentState)
 
 export const calcTotal = (form: UseFormReturn<{
-    client: string;
-    branchOffice: string;
     details: {
         id: string;
         nameProduct: string;
-        quantity: number;
         price: number;
         subtotal: number;
+        quantity?: any;
     }[];
+    client: string;
+    branchOffice: string;
     currency?: any;
 }, any, {
-    client: string;
-    branchOffice: string;
     details: {
         id: string;
         nameProduct: string;
-        quantity: number;
         price: number;
         subtotal: number;
+        quantity?: any;
     }[];
+    client: string;
+    branchOffice: string;
     currency?: any;
 }>) => form
     .watch('details')
@@ -77,3 +77,24 @@ export const formatedDataClient = (data: any[] | null) => data?.map(itm => {
         label: itm.name
     }
 })
+
+export const formatBranchOffice = (brOf: any[] | null) => brOf?.map(itm => {
+    return {
+        value: itm.id,
+        label: itm.name
+    }
+})
+
+export const arrFindById = (id: string, data: any[] | null) => data?.find((itm) => itm.id === id);
+
+export const formatedPriceByCurrency = (
+    currency: string,
+    value: string | number
+) => {
+    let formatFn = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency ?? 'usd',
+    });
+
+    return formatFn.format(isNaN(Number(value)) ? 0 : Number(value));
+};

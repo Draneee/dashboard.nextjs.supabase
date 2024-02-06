@@ -19,8 +19,7 @@ export default async function DashboardPage() {
   if (!session) {
     redirect('/admin');
   }
-  let { data: Client, error } = await supabase.from('Client').select();
-  console.log(Client);
+
   return (
     <main className='w-full py-12 px-20 bg-[#F7F7FA]'>
       <header className='flex items-center w-full gap-4 mb-8'>

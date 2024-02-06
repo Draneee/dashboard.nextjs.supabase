@@ -1,28 +1,31 @@
+'use client';
 import React from 'react';
 import { FormControl, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { ComboboxForm } from '../ui/compo-box';
 import { AddNewClient } from './add-new-client';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { formatedDataClient } from '@/lib/admin.dashboard';
-
-const ClientSelectSearch = ({ field, form }) => {
+interface IProps {
+  field: any;
+  form: any;
+}
+const ClientSelectSearch = ({ field, form }: IProps) => {
   const supabase = createClientComponentClient();
   const [data, setData] = React.useState<any[] | null>(null);
   const [search, setSearch] = React.useState('');
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     const fetchClient = async () => {
-      let { data: Client, error } = await supabase
-        .from('Client')
-        .select()
-        .range(0, 9);
-
+      let query = supabase.from('Client').select('*');
+      if (search.trim() !== '') {
+        query = query.like('name', `%${search}%`);
+      }
+      let { data: Client, error, status } = await query.range(0, 9);
       setData(Client);
     };
 
     fetchClient();
   }, [, search]);
-  console.log(data);
-  console.log(search);
+
   const handleSearch = (e: React.FormEvent<HTMLDivElement>) =>
     setSearch((e.target as HTMLInputElement).value);
   return (

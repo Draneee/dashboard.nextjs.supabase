@@ -1,6 +1,9 @@
 'use client';
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import {
+  User,
+  createClientComponentClient,
+} from '@supabase/auth-helpers-nextjs';
 import { redirect, useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 
@@ -8,7 +11,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const dashboardPath = '/admin/dashboard';
   const supabase = createClientComponentClient();
 
