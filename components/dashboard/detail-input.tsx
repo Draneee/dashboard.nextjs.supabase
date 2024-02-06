@@ -1,6 +1,11 @@
 'use client';
 import { Input } from '@/components/ui/input';
-import { calcTotal, formSchemaNewSale, objEmpty } from '@/lib/admin.dashboard';
+import {
+  calcTotal,
+  formSchemaNewSale,
+  formatedPriceByCurrency,
+  objEmpty,
+} from '@/lib/admin.dashboard';
 import React from 'react';
 import { Label } from '../ui/label';
 import { z } from 'zod';
@@ -32,10 +37,7 @@ export function FormDocumentProduct() {
       details: [objEmpty],
     },
   });
-
-  function onSubmit(values: z.infer<typeof formSchemaNewSale>) {
-    console.log(values);
-  }
+  const total = calcTotal(form);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -47,23 +49,17 @@ export function FormDocumentProduct() {
       id: crypto.randomUUID(),
       nameProduct: '',
       quantity: 0,
-      price: 0,
-      subtotal: 0,
+      price: '0',
+      subTotal: 0,
     });
-
-  const total = calcTotal(form);
 
   const supabase = createClientComponentClient();
   const [branchOffice, setBranchOffice] = React.useState<any[] | null>(null);
   React.useEffect(() => {
     const fetchClient = async () => {
-      let { data: BranchOffice, error } = await supabase
-        .from('BranchOffice')
-        .select();
+      let { data: BranchOffice } = await supabase.from('BranchOffice').select();
       setBranchOffice(BranchOffice);
-      console.log(BranchOffice);
     };
-
     fetchClient();
   }, []);
 
@@ -71,7 +67,28 @@ export function FormDocumentProduct() {
     branchOffice?.find((itm) => itm.id === id);
 
   const actualCurrency = currencySelect(form.watch('branchOffice'))?.currency;
-  const handleItmProduct = () => {};
+  const totalFormated = formatedPriceByCurrency(actualCurrency, total);
+  console.log(total);
+  async function onSubmit(values: z.infer<typeof formSchemaNewSale>) {
+    console.log(values);
+
+    const { error } = await supabase.from('Sales').insert({
+      clientId: values.client,
+      branchOfficeId: values.branchOffice,
+      total: total,
+      products: values.details.map((itm) => {
+        console.log(itm);
+        return {
+          id: itm.nameProduct,
+          nameProduct: itm.nameProduct,
+          quantity: itm.quantity,
+          subtotal: itm.subTotal,
+        };
+      }),
+    });
+
+    console.log(error);
+  }
 
   return (
     <div>
@@ -129,9 +146,11 @@ export function FormDocumentProduct() {
                 actualCurrency={actualCurrency}
               />
             ))}
-
             <button
-              onClick={handleStateAddArray}
+              onClick={(e) => {
+                e.preventDefault();
+                handleStateAddArray();
+              }}
               className='bg-blueTest text-white font-semibold py-2 px-8 mb-7 hover:scale-105 transition'
             >
               Add
@@ -139,11 +158,7 @@ export function FormDocumentProduct() {
             <footer className='flex justify-end'>
               <div className='flex items-center gap-2'>
                 <Label htmlFor='total'>Total</Label>
-                <Input
-                  id='total'
-                  className='min-w-56'
-                  value={isNaN(total) ? 0 : total}
-                />
+                <Input id='total' className='min-w-56' value={totalFormated} />
               </div>
             </footer>
           </article>

@@ -13,10 +13,12 @@ import { ComboboxForm } from '../ui/compo-box';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import {
   arrFindById,
+  calculateSubTotal,
   formatedDataClient,
   formatedPriceByCurrency,
 } from '@/lib/admin.dashboard';
 import { Label } from '../ui/label';
+import { UseFieldArrayUpdate } from 'react-hook-form';
 
 const DetailProductRow = ({ form, idx, remove, actualCurrency }: IProps) => {
   const supabase = createClientComponentClient();
@@ -41,8 +43,6 @@ const DetailProductRow = ({ form, idx, remove, actualCurrency }: IProps) => {
     form.watch(`details.${idx}.nameProduct`),
     data
   );
-  const calculateSubTotal = (quantity: string, price: string) =>
-    Number(quantity) * Number(price);
 
   const subTotalCalc = calculateSubTotal(
     form.watch(`details.${idx}.quantity`),
@@ -57,6 +57,11 @@ const DetailProductRow = ({ form, idx, remove, actualCurrency }: IProps) => {
     actualCurrency,
     subTotalCalc
   );
+
+  React.useEffect(() => {
+    form.setValue(`details.${idx}.price`, objSeclected?.price);
+    form.setValue(`details.${idx}.subTotal`, subTotalCalc);
+  }, [objSeclected, form.watch(`details.${idx}.quantity`)]);
 
   return (
     <div className='flex gap-2'>
@@ -92,7 +97,14 @@ const DetailProductRow = ({ form, idx, remove, actualCurrency }: IProps) => {
                 <FormItem className='col-span-2'>
                   <FormLabel>Quantity</FormLabel>
                   <FormControl>
-                    <Input type='number' placeholder='Quantity...' {...field} />
+                    <Input
+                      type='number'
+                      placeholder='Quantity...'
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(parseInt(e.target.value, 10))
+                      }
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

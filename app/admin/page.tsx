@@ -4,7 +4,7 @@ import {
   User,
   createClientComponentClient,
 } from '@supabase/auth-helpers-nextjs';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 
 export default function LoginPage() {

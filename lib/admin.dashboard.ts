@@ -4,6 +4,7 @@ import { z } from "zod";
 export const objEmpty = {
     name: '',
     id: crypto.randomUUID(),
+    quantity: 0
 };
 
 export const handleStateAddArray = (
@@ -26,13 +27,16 @@ export const handleDeleteState = (
     const clearArr = currentState.filter((itm) => itm.id !== idToDelte);
     fnSetter(clearArr);
 };
+export const handleModal = (fnSetter: (p: boolean) => void, currentState: boolean) => fnSetter(!currentState)
 
 const stateObjectSchema = z.object({
-    id: z.string(),
-    nameProduct: z.string(),
-    quantity: z.any(),
-    price: z.number(),
-    subtotal: z.number(),
+    id: z.string().readonly(),
+    nameProduct: z.string().min(1, {
+        message: 'Required'
+    }),
+    quantity: z.number().min(1),
+    price: z.string().readonly(),
+    subTotal: z.number().readonly(),
 });
 
 export const formSchemaNewSale = z.object({
@@ -42,33 +46,32 @@ export const formSchemaNewSale = z.object({
     details: z.array(stateObjectSchema),
 });
 
-export const handleModal = (fnSetter: (p: boolean) => void, currentState: boolean) => fnSetter(!currentState)
 
 export const calcTotal = (form: UseFormReturn<{
+    client: string;
+    branchOffice: string;
     details: {
         id: string;
         nameProduct: string;
-        price: number;
-        subtotal: number;
-        quantity?: any;
+        quantity: number;
+        price: string;
+        subTotal: number;
     }[];
-    client: string;
-    branchOffice: string;
     currency?: any;
 }, any, {
+    client: string;
+    branchOffice: string;
     details: {
         id: string;
         nameProduct: string;
-        price: number;
-        subtotal: number;
-        quantity?: any;
+        quantity: number;
+        price: string;
+        subTotal: number;
     }[];
-    client: string;
-    branchOffice: string;
     currency?: any;
 }>) => form
     .watch('details')
-    .reduce((prev, itm) => prev + itm.subtotal, 0);
+    .reduce((prev, itm) => prev + itm.subTotal, 0);
 
 
 export const formatedDataClient = (data: any[] | null) => data?.map(itm => {
@@ -98,3 +101,6 @@ export const formatedPriceByCurrency = (
 
     return formatFn.format(isNaN(Number(value)) ? 0 : Number(value));
 };
+
+export const calculateSubTotal = (quantity: string, price: string) =>
+    Number(quantity) * Number(price);

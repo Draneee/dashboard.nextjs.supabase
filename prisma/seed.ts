@@ -1,66 +1,66 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import { randBetweenDate, randNumber, randProduct } from "@ngneat/falso";
+
+import { randProduct } from "@ngneat/falso";
 import { faker } from "@faker-js/faker";
 
 const prisma = new PrismaClient();
 
-async function createClients() {
+async function seedingFn() {
+    console.log(`Starting Products Seeding...`)
     const fakeProducts = randProduct({
-        length: 300,
+        length: 50,
     });
-    for (let index = 0; index < fakeProducts.length; index++) {
-        const name = faker.commerce.productName();
+    for (let i = 0; i < fakeProducts.length; i++) {
+        const productName = faker.commerce.productName();
         await prisma.product.create({
             data: {
-                name: name,
+                name: productName,
                 price: faker.commerce.price(),
             }
         });
+        console.log(`Product seeded: ${productName}`);
+
     }
-    console.log(`Database has been seeded. 🌱`);
+    console.log(`Product Seeding Complete.`);
 
-    // for (let i = 5; i <= 20; i++) {
-    //     const clientName = `Cliente ${i}`;
+    console.log(`Starting Office Seeding...`)
+    for (const officeData of branchOfficesData) {
+        await prisma.branchOffice.create({ data: officeData });
+        console.log(`Office seeded: ${officeData.name}`);
+    }
+    console.log(`Office Seeding Complete.`);
 
-    //     await prisma.client.create({
-    //         data: {
-    //             name: clientName,
-    //         },
-    //     });
 
-    //     console.log(`Cliente creado: ${clientName}`);
-    // }
+    console.log(`Starting Client Seeding...`)
+    const fakeClients = randProduct({
+        length: 50,
+    });
+    for (let i = 0; i <= fakeClients.length; i++) {
+        const clientName = faker.person.fullName();
+
+        await prisma.client.create({
+            data: {
+                name: clientName,
+            },
+        });
+
+        console.log(`Client seeded: ${clientName}`);
+    }
 
     await prisma.$disconnect();
 }
 
-createClients()
+seedingFn()
 
-
-// const main = async () => {
-//     try {
-//         await prisma.product.deleteMany();
-//         const productName = faker.commerce.product()
-//         await prisma.product.deleteMany();
-//         const fakeProducts = randProduct({
-//             length: 300,
-//         });
-
-//         for (let index = 0; index < fakeProducts.length; index++) {
-//             const name = faker.commerce.productName();
-//             await prisma.product.create({
-//                 name: name,
-//                 price: faker.commerce.price(),
-//             });
-//         }
-//         console.log(`Database has been seeded. 🌱`);
-//     }
-//     catch (error) {
-//         throw error;
-//     }
-// }
-
-// main().catch((err) => {
-//     console.warn("Error While generating Seed: \n", err);
-// });
+const branchOfficesData = [
+    { name: "Colombia", currency: "COP" },
+    { name: "Mexico", currency: "MXN" },
+    { name: "Brazil", currency: "BRL" },
+    { name: "Argentina", currency: "ARS" },
+    { name: "Chile", currency: "CLP" },
+    { name: "Peru", currency: "PEN" },
+    { name: "Venezuela", currency: "VES" },
+    { name: "Ecuador", currency: "USD" },
+    { name: "Uruguay", currency: "UYU" },
+    { name: "Paraguay", currency: "PYG" },
+];
