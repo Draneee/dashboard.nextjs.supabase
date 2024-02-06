@@ -52,7 +52,7 @@ const TableAlertDialog = ({ sales }: { sales: Datum[] }) => {
         </TableHeader>
         <TableBody>
           {sales?.map((itm) => (
-            <TableRow>
+            <TableRow key={itm.id}>
               <TableCell className='font-medium'>{itm.clientId.name}</TableCell>
               <TableCell>{itm.branchOfficeId.name}</TableCell>
               <TableCell>{itm.branchOfficeId.currency}</TableCell>
@@ -116,7 +116,10 @@ const TableAlertDialog = ({ sales }: { sales: Datum[] }) => {
                 </h3>
                 <div className='space-y-10 max-h-96 overflow-auto px-1 pb-1'>
                   {item?.products?.map((itm, i) => (
-                    <div className='grid grid-cols-12 gap-4 gap-y-2'>
+                    <div
+                      key={itm.id}
+                      className='grid grid-cols-12 gap-4 gap-y-2'
+                    >
                       <InputToShow
                         className='col-span-12'
                         value={itm.nameProduct}
@@ -157,7 +160,7 @@ const TableAlertDialog = ({ sales }: { sales: Datum[] }) => {
                 fnSalesTotal(item)
               )}
             </AlertDialogCancel>
-            <AlertDialogAction>It's Ok</AlertDialogAction>
+            <AlertDialogAction>Its Ok</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

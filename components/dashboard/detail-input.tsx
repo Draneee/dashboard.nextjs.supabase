@@ -64,7 +64,9 @@ export function FormDocumentProduct() {
                       </FormControl>
                       <SelectContent>
                         {branchOffice?.map((itm) => (
-                          <SelectItem value={itm.id}>{itm.name}</SelectItem>
+                          <SelectItem key={itm.id} value={itm.id}>
+                            {itm.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
