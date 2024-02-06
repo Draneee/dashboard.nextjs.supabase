@@ -1,100 +1,91 @@
 'use client';
 import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { Button } from '@/components/ui/button';
 import {
-  User,
-  createClientComponentClient,
-} from '@supabase/auth-helpers-nextjs';
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { loginSchema } from '@/lib/utils.admin';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-const LoginView = () => {
-  const [user, setUser] = React.useState<User | null>(null);
-  const dashboardPath = '/admin/dashboard';
-  const router = useRouter();
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+
+export function LoginView() {
   const supabase = createClientComponentClient();
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+  });
 
-    console.log(e);
-  };
-  React.useEffect(() => {
-    async function getUser() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    }
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    console.log(values);
 
-    getUser();
-  }, []);
-
-  const handleSignUp = async () => {
-    const res = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${location.origin}/auth/callback`,
-      },
-    });
-    setUser(res.data.user);
-    router.refresh();
-    setEmail('');
-    setPassword('');
-  };
-
-  const handleSignIn = async () => {
     const res = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: values.email,
+      password: values.password,
     });
-    console.log(res);
-    router.push(dashboardPath);
-  };
+    console.log(res.error);
+    if (res.error) {
+      toast.error(res.error.message);
+      return;
+    }
+    form.reset();
+    router.push('/admin/dashboard');
+  }
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.refresh();
-    setUser(null);
-  };
-
-  console.log({ user });
   return (
-    <main className='h-screen flex items-center justify-center bg-gray-800 p-6'>
-      <div className='bg-gray-900 p-8 rounded-lg shadow-md w-96'>
-        <form onSubmit={handleSubmit}>
-          <input
-            type='email'
-            name='email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder='Email'
-            className='mb-4 w-full p-3  border border-gray-700 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500'
-          />
-          <input
-            type='password'
-            name='password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder='Password'
-            className='mb-4 w-full p-3  border border-gray-700 bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500'
-          />
-        </form>
-        <button
-          onClick={handleSignUp}
-          className='w-full mb-2 p-3  bg-blue-600 text-white hover:bg-blue-700 focus:outline-none'
-        >
-          Sign Up
-        </button>
-        <button
-          onClick={handleSignIn}
-          className='w-full p-3  bg-gray-700 text-white hover:bg-gray-600 focus:outline-none'
-        >
-          Sign In
-        </button>
+    <main className='h-screen flex items-center justify-center bg-[#F6F7FA] p-6'>
+      <div className='bg-[#DAE6F5]  p-8 rounded-lg shadow-md w-96'>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+            <FormField
+              control={form.control}
+              name='email'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Email@domain.com' {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='password'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Password' type='password' {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type='submit'
+              className='bg-blueTest w-full hover:bg-blueTest font-semibold'
+            >
+              Submit
+            </Button>
+          </form>
+        </Form>
       </div>
     </main>
   );
-};
-
-export default LoginView;
+}

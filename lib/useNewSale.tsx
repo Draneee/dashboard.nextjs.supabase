@@ -51,8 +51,6 @@ const useNewSale = () => {
   const totalFormated = formatedPriceByCurrency(actualCurrency, total);
 
   async function onSubmitFnNewSale(values: z.infer<typeof formSchemaNewSale>) {
-    console.log(values);
-
     const { error } = await supabase.from('Sales').insert({
       clientId: values.client,
       branchOfficeId: values.branchOffice,

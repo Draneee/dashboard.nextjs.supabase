@@ -1,4 +1,4 @@
-import LoginView from '@/components/login/login-view';
+import { LoginView } from '@/components/login/login-view';
 import { Database } from '@/lib/database.types';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
