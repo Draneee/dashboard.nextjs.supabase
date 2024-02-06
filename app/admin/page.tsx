@@ -62,21 +62,11 @@ export default function LoginPage() {
 
   console.log({ user });
 
-  // if (user) {
-  //   router.push(dashboardPath);
-  // }
-
-  const [likes, setLikes] = useState(0);
-
-  function handleClick() {
-    setLikes(likes + 1);
+  if (user) {
+    router.push(dashboardPath);
   }
-
   return (
     <main className='h-screen flex items-center justify-center bg-gray-800 p-6'>
-      <button type='button' onClick={handleClick}>
-        {likes}
-      </button>
       <div className='bg-gray-900 p-8 rounded-lg shadow-md w-96'>
         <form onSubmit={handleSubmit}>
           <input
