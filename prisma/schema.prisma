@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,31 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model BranchOffice {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name     String
+  currency String
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model Client {
+  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String
+}
+
+model Details {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity  Int
+  subtotal  BigInt
+  productId String  @db.Uuid
+  Product   Product @relation(fields: [productId], references: [id])
+}
+
+model Product {
+  id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name    String
+  price   BigInt
+  Details Details[]
 }
