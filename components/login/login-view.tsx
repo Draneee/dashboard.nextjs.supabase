@@ -29,13 +29,10 @@ export function LoginView() {
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    console.log(values);
-
     const res = await supabase.auth.signInWithPassword({
       email: values.email,
       password: values.password,
     });
-    console.log(res.error);
     if (res.error) {
       toast.error(res.error.message);
       return;

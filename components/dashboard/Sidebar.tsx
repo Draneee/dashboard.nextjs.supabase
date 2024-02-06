@@ -1,8 +1,12 @@
 'use client';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useSelectedLayoutSegment } from 'next/navigation';
-import { useRouter } from 'next/router';
+import {
+  usePathname,
+  useRouter,
+  useSelectedLayoutSegment,
+} from 'next/navigation';
 const data = [
   {
     pathIcon: 'home.svg',
@@ -16,8 +20,12 @@ const data = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  console.log(pathname);
-
+  const supabase = createClientComponentClient();
+  const router = useRouter();
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.refresh();
+  };
   return (
     <aside className='bg-blueTest flex flex-col justify-between py-12'>
       <ul>
@@ -45,7 +53,15 @@ export default function Sidebar() {
           </li>
         ))}
       </ul>
-      <button></button>
+      <button onClick={handleLogout} className='grid place-items-center'>
+        <Image
+          src='/custom-svg/exit.svg'
+          alt='Icon'
+          width={0}
+          height={0}
+          className='h-6 w-6 invert'
+        />
+      </button>
     </aside>
   );
 }
