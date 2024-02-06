@@ -40,7 +40,7 @@ const DetailProductRow = ({ form, idx, remove, actualCurrency }: IProps) => {
     setSearch((e.target as HTMLInputElement).value);
 
   const objSeclected = arrFindById(
-    form.watch(`details.${idx}.nameProduct`),
+    form.watch(`details.${idx}.idProduct`),
     data
   );
 
@@ -61,6 +61,7 @@ const DetailProductRow = ({ form, idx, remove, actualCurrency }: IProps) => {
   React.useEffect(() => {
     form.setValue(`details.${idx}.price`, objSeclected?.price);
     form.setValue(`details.${idx}.subTotal`, subTotalCalc);
+    form.setValue(`details.${idx}.nameProduct`, objSeclected?.name);
   }, [objSeclected, form.watch(`details.${idx}.quantity`)]);
 
   return (
@@ -68,7 +69,7 @@ const DetailProductRow = ({ form, idx, remove, actualCurrency }: IProps) => {
       <section className='grid grid-cols-12 gap-4 mb-5 flex-1'>
         <FormField
           control={form.control}
-          name={`details.${idx}.nameProduct`}
+          name={`details.${idx}.idProduct`}
           render={({ field }) => (
             <FormItem className='col-span-6'>
               <FormLabel>Name</FormLabel>
@@ -79,7 +80,7 @@ const DetailProductRow = ({ form, idx, remove, actualCurrency }: IProps) => {
                     label='Product'
                     selectOptions={formatedDataClient(data)}
                     form={form}
-                    name={`details.${idx}.nameProduct`}
+                    name={`details.${idx}.idProduct`}
                     handlerSearch={handleSearch}
                   />
                 </FormControl>

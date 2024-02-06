@@ -28,8 +28,9 @@ const useNewSale = () => {
   const handleStateAddArray = () =>
     append({
       id: crypto.randomUUID(),
-      nameProduct: '',
+      idProduct: '',
       quantity: 0,
+      nameProduct: '',
       price: '0',
       subTotal: 0,
     });
@@ -51,6 +52,7 @@ const useNewSale = () => {
   const totalFormated = formatedPriceByCurrency(actualCurrency, total);
 
   async function onSubmitFnNewSale(values: z.infer<typeof formSchemaNewSale>) {
+    console.log(values);
     const { error } = await supabase.from('Sales').insert({
       clientId: values.client,
       branchOfficeId: values.branchOffice,
@@ -58,7 +60,7 @@ const useNewSale = () => {
       products: values.details.map((itm) => {
         return {
           price: itm.price,
-          id: itm.nameProduct,
+          id: itm.idProduct,
           quantity: itm.quantity,
           subtotal: itm.subTotal,
           nameProduct: itm.nameProduct,

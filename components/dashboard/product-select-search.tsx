@@ -36,7 +36,7 @@ const ProductSelectSearch = ({ field, form, i }: IProps) => {
             label='Product'
             selectOptions={formatedDataClient(data)}
             form={form}
-            name={`details.${i}.nameProduct`}
+            name={`details.${i}.idProduct`}
             handlerSearch={handleSearch}
           />
         </FormControl>

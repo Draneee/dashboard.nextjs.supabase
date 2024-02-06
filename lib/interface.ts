@@ -26,9 +26,10 @@ export interface ClientID {
 }
 
 export interface Product {
+    nameProduct: string | number | undefined;
     price: string;
     id: string;
     quantity: number;
     subtotal: number;
-    nameProduct: string;
+    idProduct: string;
 }

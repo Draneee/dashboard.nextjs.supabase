@@ -32,12 +32,13 @@ export const handleModal = (fnSetter: (p: boolean) => void, currentState: boolea
 
 const stateObjectSchema = z.object({
     id: z.string().readonly(),
-    nameProduct: z.string().min(1, {
+    idProduct: z.string().min(1, {
         message: 'Required'
     }),
     quantity: z.number().min(1),
     price: z.string().readonly(),
     subTotal: z.number().readonly(),
+    nameProduct: z.string().readonly(),
 });
 
 export const formSchemaNewSale = z.object({
@@ -53,10 +54,11 @@ export const calcTotal = (form: UseFormReturn<{
     branchOffice: string;
     details: {
         id: string;
-        nameProduct: string;
+        idProduct: string;
         quantity: number;
         price: string;
         subTotal: number;
+        nameProduct: string;
     }[];
     currency?: any;
 }, any, {
@@ -64,10 +66,11 @@ export const calcTotal = (form: UseFormReturn<{
     branchOffice: string;
     details: {
         id: string;
-        nameProduct: string;
+        idProduct: string;
         quantity: number;
         price: string;
         subTotal: number;
+        nameProduct: string;
     }[];
     currency?: any;
 }>) => form

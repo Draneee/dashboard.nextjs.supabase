@@ -19,7 +19,7 @@ const ClientSelectSearch = ({ field, form }: IProps) => {
       if (search.trim() !== '') {
         query = query.like('name', `%${search}%`);
       }
-      let { data: Client, error, status } = await query.range(0, 9);
+      let { data: Client } = await query.range(0, 9);
       setData(Client);
     };
 

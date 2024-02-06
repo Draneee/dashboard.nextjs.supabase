@@ -23,6 +23,7 @@ export default async function SalesHistory() {
     products,
     id
   `)) as SalesData;
+
   Sales = Sales?.reverse();
   return <TableAlertDialog sales={Sales} />;
 }
